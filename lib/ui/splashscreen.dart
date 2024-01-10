@@ -142,8 +142,6 @@ class _SplashScreenState extends State<SplashScreen> {
   void _checkInternetAndNavigate() async {
     var connectivityResult = await Connectivity().checkConnectivity();
     bool isConnected = await _isConnectedToInternet();
-    print(connectivityResult);
-    print(isConnected);
 
     if ((connectivityResult == ConnectivityResult.mobile ||
         connectivityResult == ConnectivityResult.wifi ||
