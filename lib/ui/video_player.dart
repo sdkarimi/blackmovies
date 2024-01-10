@@ -1,4 +1,5 @@
 import 'package:chewie/chewie.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
@@ -60,7 +61,7 @@ class _VideoAppState extends State<VideoApp> {
   }
 
   void _hideControlsAfterDelay() {
-    Future.delayed(Duration(seconds: 3), () {
+    Future.delayed(const Duration(seconds: 3), () {
       if (mounted && _videoPlayerController.value.isPlaying) {
         _hideControls();
       }
@@ -75,7 +76,7 @@ class _VideoAppState extends State<VideoApp> {
         appBar: AppBar(
           leading: IconButton(
             color: Colors.orange.shade500,
-            icon: Icon(Icons.arrow_back),
+            icon: const Icon(CupertinoIcons.arrow_right_circle_fill),
             onPressed: () {
               dispose();
               Navigator.pop(context);
@@ -104,7 +105,7 @@ class _VideoAppState extends State<VideoApp> {
                 child: Positioned(
                   left: 10,
                   child: IconButton(
-                    icon: Icon(Icons.replay_10),
+                    icon: const Icon(Icons.replay_10),
                     onPressed: () {
                       _rewindVideo();
                     },
@@ -116,7 +117,7 @@ class _VideoAppState extends State<VideoApp> {
                 child: Positioned(
                   right: 10,
                   child: IconButton(
-                    icon: Icon(Icons.forward_10),
+                    icon: const Icon(Icons.forward_10),
                     onPressed: () {
                       _forwardVideo();
                     },
@@ -132,12 +133,12 @@ class _VideoAppState extends State<VideoApp> {
 
   void _rewindVideo() {
     _videoPlayerController
-        .seekTo(_videoPlayerController.value.position - Duration(seconds: 10));
+        .seekTo(_videoPlayerController.value.position - const Duration(seconds: 10));
   }
 
   void _forwardVideo() {
     _videoPlayerController
-        .seekTo(_videoPlayerController.value.position + Duration(seconds: 10));
+        .seekTo(_videoPlayerController.value.position + const Duration(seconds: 10));
   }
 
   @override
