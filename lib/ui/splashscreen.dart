@@ -147,27 +147,25 @@ class _SplashScreenState extends State<SplashScreen> {
 
     if ((connectivityResult == ConnectivityResult.mobile ||
         connectivityResult == ConnectivityResult.wifi ||
-        connectivityResult == ConnectivityResult.vpn ) &&
+        connectivityResult == ConnectivityResult.vpn) &&
         isConnected) {
       _timer = Timer(const Duration(seconds: 2), () {
         Navigator.of(context).pushReplacementNamed('/home');
       });
     } else {
       _showNoInternetDialog();
-      _timer = Timer.periodic(const Duration(seconds: 2), (timer) async {
-        connectivityResult =
-            await Connectivity().checkConnectivity();
-        isConnected = await _isConnectedToInternet();
-        if ((connectivityResult == ConnectivityResult.mobile ||
-            connectivityResult == ConnectivityResult.wifi ||
-            connectivityResult == ConnectivityResult.vpn) &&
-            isConnected) {
-          _timer.cancel();
-          Navigator.of(context).pushReplacementNamed('/home');
-        }
-      });
+      await Future.delayed(const Duration(seconds: 2)); // انتظار 2 ثانیه
+      connectivityResult = await Connectivity().checkConnectivity();
+      isConnected = await _isConnectedToInternet();
+      if ((connectivityResult == ConnectivityResult.mobile ||
+          connectivityResult == ConnectivityResult.wifi ||
+          connectivityResult == ConnectivityResult.vpn) &&
+          isConnected) {
+        Navigator.of(context).pushReplacementNamed('/home');
+      }
     }
   }
+
 
   Future<bool> _isConnectedToInternet() async {
     try {
