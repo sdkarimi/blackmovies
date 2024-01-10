@@ -1,6 +1,4 @@
-
 import 'package:chewie/chewie.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
@@ -16,6 +14,7 @@ class VideoApp extends StatefulWidget {
 class _VideoAppState extends State<VideoApp> {
   late VideoPlayerController _videoPlayerController;
   late ChewieController _chewieController;
+  bool _areControlsVisible = true;
 
   @override
   void initState() {
@@ -32,7 +31,40 @@ class _VideoAppState extends State<VideoApp> {
       aspectRatio: 16 / 9,
       autoPlay: true,
       looping: true,
+      allowPlaybackSpeedChanging: true,
+      autoInitialize: true,
+      draggableProgressBar: true,
     );
+
+    _videoPlayerController.addListener(() {
+      if (_videoPlayerController.value.isPlaying) {
+        // اگر ویدئو در حال پخش است، مخفی کردن دکمه‌ها
+        _hideControlsAfterDelay();
+      } else {
+        // اگر ویدئو متوقف شده است، نمایش دکمه‌ها
+        _showControls();
+      }
+    });
+  }
+
+  void _showControls() {
+    setState(() {
+      _areControlsVisible = true;
+    });
+  }
+
+  void _hideControls() {
+    setState(() {
+      _areControlsVisible = false;
+    });
+  }
+
+  void _hideControlsAfterDelay() {
+    Future.delayed(Duration(seconds: 3), () {
+      if (mounted && _videoPlayerController.value.isPlaying) {
+        _hideControls();
+      }
+    });
   }
 
   @override
@@ -41,24 +73,71 @@ class _VideoAppState extends State<VideoApp> {
       textDirection: TextDirection.rtl,
       child: Scaffold(
         appBar: AppBar(
-
-          leading:  IconButton(
+          leading: IconButton(
             color: Colors.orange.shade500,
-            icon: Icon(CupertinoIcons.arrow_right_circle_fill,
-                size: MediaQuery.of(context).size.width * 0.08),
+            icon: Icon(Icons.arrow_back),
             onPressed: () {
+              dispose();
               Navigator.pop(context);
             },
           ),
-          title: const Center(child: Text('نمایش ویدیو', style: TextStyle(color: Colors.orange))),
+          title: const Center(
+              child:
+              Text('نمایش ویدیو', style: TextStyle(color: Colors.orange))),
         ),
-        body: Center(
-          child: Chewie(
-            controller: _chewieController,
+        body: GestureDetector(
+          onTap: () {
+            // هنگامی که روی ویدئو کلیک می‌شود، نمایش یا مخفی کردن دکمه‌ها
+            setState(() {
+              _areControlsVisible = !_areControlsVisible;
+            });
+            _hideControlsAfterDelay();
+          },
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Chewie(
+                controller: _chewieController,
+              ),
+              Visibility(
+                visible: _areControlsVisible,
+                child: Positioned(
+                  left: 10,
+                  child: IconButton(
+                    icon: Icon(Icons.replay_10),
+                    onPressed: () {
+                      _rewindVideo();
+                    },
+                  ),
+                ),
+              ),
+              Visibility(
+                visible: _areControlsVisible,
+                child: Positioned(
+                  right: 10,
+                  child: IconButton(
+                    icon: Icon(Icons.forward_10),
+                    onPressed: () {
+                      _forwardVideo();
+                    },
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
     );
+  }
+
+  void _rewindVideo() {
+    _videoPlayerController
+        .seekTo(_videoPlayerController.value.position - Duration(seconds: 10));
+  }
+
+  void _forwardVideo() {
+    _videoPlayerController
+        .seekTo(_videoPlayerController.value.position + Duration(seconds: 10));
   }
 
   @override
